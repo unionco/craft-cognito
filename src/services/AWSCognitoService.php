@@ -3,11 +3,13 @@
 namespace unionco\craftcognitoauth\services;
 
 use Craft;
+use Aws\Result;
+use Lcobucci\JWT\Token;
 use craft\base\Component;
+use unionco\craftcognitoauth\CraftJwtAuth;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
-use Lcobucci\JWT\Token;
-use unionco\craftcognitoauth\CraftJwtAuth;
+use Throwable;
 
 class AWSCognitoService extends Component
 {
@@ -65,7 +67,8 @@ class AWSCognitoService extends Component
     {
         try {
             $secretHash = $this->cognitoSecretHash($username);
-            $result = $this->client->adminInitiateAuth([
+            /** @var Result */
+            $initiateAuthResult = $this->client->adminInitiateAuth([
                 'AuthFlow' => 'ADMIN_NO_SRP_AUTH',
                 'ClientId' => $this->client_id,
                 'UserPoolId' => $this->userpool_id,
@@ -79,11 +82,25 @@ class AWSCognitoService extends Component
             return ["error" => $e->getMessage()];
         }
 
+        // Added by Union 9/5/22 - Check if the user needs to reset their password
+        try {
+            $challengeName = $initiateAuthResult->get('ChallengeName');
+            if (strpos($challengeName, 'NEW_PASSWORD_REQUIRED') !== false) {
+                $session = $initiateAuthResult->get('Session');
+                return [
+                    'message' => 'Please reset your password',
+                    'session' => $session,
+                ];
+            }
+        } catch (Throwable $e) {
+            // keep moving
+        }
+
         return [
-            "token" => $result->get('AuthenticationResult')['IdToken'],
-            "accessToken" => $result->get('AuthenticationResult')['AccessToken'],
-            "refreshToken" => $result->get('AuthenticationResult')['RefreshToken'],
-            "expiresIn" => $result->get('AuthenticationResult')['ExpiresIn']
+            "token" => $initiateAuthResult->get('AuthenticationResult')['IdToken'],
+            "accessToken" => $initiateAuthResult->get('AuthenticationResult')['AccessToken'],
+            "refreshToken" => $initiateAuthResult->get('AuthenticationResult')['RefreshToken'],
+            "expiresIn" => $initiateAuthResult->get('AuthenticationResult')['ExpiresIn']
         ];
     }
 
@@ -174,7 +191,8 @@ class AWSCognitoService extends Component
         }
 
         try {
-            $result = $this->client->adminCreateUser([
+            /** @var Result */
+            $createUserResult = $this->client->adminCreateUser([
                 'UserPoolId' => $this->userpool_id,
                 'Username' => $username ? $username : $email,
                 'MessageAction' => 'SUPPRESS',
@@ -182,10 +200,11 @@ class AWSCognitoService extends Component
                 'UserAttributes' => $userAttributes
             ]);
 
-            $userSub = $result->get('User')['Username'];
+            $userSub = $createUserResult->get('User')['Username'];
 
             $secretHash = $this->cognitoSecretHash($email);
-            $result = $this->client->adminInitiateAuth([
+            /** @var Result */
+            $initiateAuthResult = $this->client->adminInitiateAuth([
                 'AuthFlow' => 'ADMIN_NO_SRP_AUTH',
                 'AuthParameters' => [
                     "USERNAME" => $email,
@@ -196,9 +215,10 @@ class AWSCognitoService extends Component
                 'UserPoolId' => $this->userpool_id
             ]);
 
-            $session = $result->get("Session");
+            $session = $initiateAuthResult->get("Session");
 
-            $result = $this->client->adminRespondToAuthChallenge([
+            /** @var Result */
+            $respondToAuthChallengeResult = $this->client->adminRespondToAuthChallenge([
                 'ChallengeName' => 'NEW_PASSWORD_REQUIRED',
                 'ChallengeResponses' => [
                     "USERNAME" => $email,
