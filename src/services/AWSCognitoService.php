@@ -88,6 +88,7 @@ class AWSCognitoService extends Component
             if (strpos($challengeName, 'NEW_PASSWORD_REQUIRED') !== false) {
                 $session = $initiateAuthResult->get('Session');
                 return [
+                    'resetPasswordFlag' => true,
                     'message' => 'Please reset your password',
                     'session' => $session,
                 ];
