@@ -11,18 +11,17 @@
 
 namespace unionco\craftcognitoauth;
 
-use unionco\craftcognitoauth\models\Settings;
-use unionco\craftcognitoauth\services\AWSCognitoService;
-use unionco\craftcognitoauth\services\SettingsService;
-
 use Craft;
+use yii\base\Event;
 use craft\base\Plugin;
-use craft\events\RegisterUrlRulesEvent;
-use craft\web\Application;
 use craft\web\UrlManager;
+use craft\web\Application;
+use craft\events\RegisterUrlRulesEvent;
+use unionco\craftcognitoauth\models\Settings;
+use unionco\craftcognitoauth\services\SettingsService;
 use unionco\craftcognitoauth\helpers\ValidatorsHelper;
 use unionco\craftcognitoauth\services\AbstractValidator;
-use yii\base\Event;
+use unionco\craftcognitoauth\services\AWSCognitoService;
 
 /**
  * Class CraftJwtAuth
@@ -63,24 +62,41 @@ class CraftJwtAuth extends Plugin
     public function init()
     {
         parent::init();
+        Craft::setAlias('@cognito', $this->getBasePath());
         self::$plugin = $this;
 
-        foreach(ValidatorsHelper::getAllTypes() as $name => $validator){
+        foreach (ValidatorsHelper::getAllTypes() as $name => $validator) {
             $this->set($name, $validator);
         }
 
-        Craft::$app->on(Application::EVENT_INIT, function() {
-            if(Craft::$app instanceof craft\web\Application){
-                foreach(ValidatorsHelper::getAllTypes() as $name => $validator){
-                    /**
-                     * @var AbstractValidator
-                     */
-                    $validator = $this->get($name);
-                    if($validator->isEnabled())
-                        $this->get($name)->parseTokenAndCreateUser();
+        Event::on(
+            Application::class,
+            Application::EVENT_INIT,
+            function () {
+                if (Craft::$app instanceof craft\web\Application) {
+                    foreach (ValidatorsHelper::getAllTypes() as $name => $validator) {
+                        /**
+                         * @var AbstractValidator
+                         */
+                        $validator = $this->get($name);
+                        if ($validator->isEnabled())
+                            $this->get($name)->parseTokenAndCreateUser();
+                    }
                 }
             }
-        });
+        );
+
+        $i18n = Craft::$app->getI18n();
+        /** @noinspection UnSafeIsSetOverArrayInspection */
+        if (!isset($i18n->translations[$this->id]) && !isset($i18n->translations[$this->id . '*'])) {
+            $i18n->translations[$this->id] = [
+                'class' => PhpMessageSource::class,
+                'sourceLanguage' => 'en-US',
+                'basePath' => '@cognito/translations',
+                'forceTranslation' => true,
+                'allowOverrides' => true,
+            ];
+        }
 
         // Register our CP routes
         Event::on(
@@ -88,7 +104,8 @@ class CraftJwtAuth extends Plugin
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
                 // Merge so that settings controller action comes first (important!)
-                $event->rules = array_merge([
+                $event->rules = array_merge(
+                    [
                         'settings/plugins/craft-cognito-auth' => 'craft-cognito-auth/settings/edit',
                     ],
                     $event->rules
@@ -96,14 +113,14 @@ class CraftJwtAuth extends Plugin
             }
         );
 
-        Craft::info(
-            Craft::t(
-                'craft-cognito-auth',
-                '{name} plugin loaded',
-                ['name' => $this->name]
-            ),
-            __METHOD__
-        );
+        // Craft::info(
+        //     Craft::t(
+        //         'craft-cognito-auth',
+        //         '{name} plugin loaded',
+        //         ['name' => $this->name]
+        //     ),
+        //     __METHOD__
+        // );
     }
 
     // Protected Methods
