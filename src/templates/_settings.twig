@@ -10,9 +10,9 @@
 {% set title = 'Craft Cognito Auth' %}
 
 {% set tabs = {
-    general: {label: 'General configuration'|t('craft-cognito-auth'), url: '#general'},
-    cognito: {label: 'Cognito configuration'|t('craft-cognito-auth'), url: '#cognito'},
-    saml: {label: 'SAML configuration'|t('craft-cognito-auth'), url: '#saml'},
+    general: {label: 'General configuration'|t('craft-cognito'), url: '#general'},
+    cognito: {label: 'Cognito configuration'|t('craft-cognito'), url: '#cognito'},
+    saml: {label: 'SAML configuration'|t('craft-cognito'), url: '#saml'},
 } %}
 
 {% set fullPageForm = true %}
@@ -24,8 +24,8 @@
 {% endblock %}
 
 {% block content %}
-    <input type="hidden" name="action" value="craft-cognito-auth/settings/save">
-    <input type="hidden" name="pluginHandle" value="craft-cognito-auth">
+    <input type="hidden" name="action" value="craft-cognito/settings/save">
+    <input type="hidden" name="pluginHandle" value="craft-cognito">
 
     <div id="general">
         {{ forms.lightswitchField({

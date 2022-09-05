@@ -28,7 +28,7 @@ class SettingsController extends Controller
         $view = Craft::$app->view;
         $view->setTemplateMode($view::TEMPLATE_MODE_CP);
 
-        return $this->renderTemplate('craft-cognito-auth/_settings', [
+        return $this->renderTemplate('craft-cognito/_settings', [
             'settings' => $settings
         ]);
     }
@@ -56,7 +56,7 @@ class SettingsController extends Controller
 
         if ($settings->hasErrors()
         ) {
-            Craft::$app->getSession()->setError(Craft::t('craft-cognito-auth', 'Couldn’t save plugin settings.'));
+            Craft::$app->getSession()->setError(Craft::t('craft-cognito', 'Couldn’t save plugin settings.'));
 
             return null;
         }
@@ -64,7 +64,7 @@ class SettingsController extends Controller
         // Save it
         Craft::$app->getPlugins()->savePluginSettings(CraftJwtAuth::$plugin, $settings->getAttributes());
 
-        $notice = Craft::t('craft-cognito-auth', 'Plugin settings saved.');
+        $notice = Craft::t('craft-cognito', 'Plugin settings saved.');
         $errors = [];
 
         if (!empty($errors)) {

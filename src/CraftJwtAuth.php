@@ -106,7 +106,7 @@ class CraftJwtAuth extends Plugin
                 // Merge so that settings controller action comes first (important!)
                 $event->rules = array_merge(
                     [
-                        'settings/plugins/craft-cognito-auth' => 'craft-cognito-auth/settings/edit',
+                        'settings/plugins/craft-cognito' => 'craft-cognito/settings/edit',
                     ],
                     $event->rules
                 );
@@ -115,7 +115,7 @@ class CraftJwtAuth extends Plugin
 
         // Craft::info(
         //     Craft::t(
-        //         'craft-cognito-auth',
+        //         'craft-cognito',
         //         '{name} plugin loaded',
         //         ['name' => $this->name]
         //     ),
@@ -140,7 +140,7 @@ class CraftJwtAuth extends Plugin
     protected function settingsHtml(): ?string
     {
         return Craft::$app->view->renderTemplate(
-            'craft-cognito-auth/settings',
+            '@cognito/settings',
             [
                 'settings' => $this->getSettings()
             ]

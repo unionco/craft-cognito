@@ -22,7 +22,7 @@ class SettingsService extends Component
         $settings = new PluginSettings();
         $settings->normal = CraftJwtAuth::$plugin->settings;
         $settings->extra = new ExtraSettings();
-        $settings->extra->setAttributes(Craft::$app->config->getConfigFromFile('craft-cognito-auth-extra'), false);
+        $settings->extra->setAttributes(Craft::$app->config->getConfigFromFile('craft-cognito-extra'), false);
 
         return $settings;
     }
