@@ -30,10 +30,12 @@ class AuthController extends Controller
     protected array|int|bool $allowAnonymous = [
         'register',
         'confirm',
-        'confirmrequest',
+        'confirm-request',
         'login',
-        'forgotpasswordrequest',
-        'forgotpassword',
+        'set-password',
+        'set-mfa-preferences',
+        'forgot-password-request',
+        'forgot-password',
         'refresh',
     ];
 
@@ -60,7 +62,8 @@ class AuthController extends Controller
 
         $cognitoResponse = CraftJwtAuth::getInstance()
             ->cognito
-            ->signup($email, $password, $firstname, $lastname, $phone, $username);
+            ->adminCreateUser($email, $password, $firstname, $lastname, $phone, $username);
+        // signup
         if (array_key_exists('UserSub', $cognitoResponse)) {
             return $this->_handleResponse(
                 [
@@ -109,7 +112,7 @@ class AuthController extends Controller
         }
     }
 
-    public function actionConfirmrequest()
+    public function actionConfirmRequest()
     {
         /** @var Request */
         $request = Craft::$app->getRequest();
@@ -160,7 +163,13 @@ class AuthController extends Controller
                     'session' => $cognitoResponse['session'],
                 ],
                 200,
-                true
+                false // don't start a session yet, as we don't have a valid token
+            );
+        } elseif (key_exists('mfaSetupFlag', $cognitoResponse)) {
+            return $this->_handleResponse(
+                array_merge(['status' => 0,], $cognitoResponse),
+                200,
+                false
             );
         } elseif (array_key_exists('token', $cognitoResponse)) {
             if ($this->hasEventHandlers(self::EVENT_AFTER_LOGIN_COGNITO)) {
@@ -189,14 +198,69 @@ class AuthController extends Controller
         }
     }
 
-    public function actionForgotpasswordrequest()
+    public function actionSetPassword()
+    {
+        /** @var Request */
+        $request = Craft::$app->getRequest();
+
+        $email = $request->getRequiredBodyParam('email');
+        $newPass = $request->getRequiredBodyParam('newPass');
+        $session = $request->getRequiredBodyParam('session');
+
+        $cognitoResponse = CraftJwtAuth::getInstance()
+            ->cognito
+            ->setPassword($email, $session, $newPass);
+        if (key_exists('mfaSetupFlag', $cognitoResponse)) {
+            return $this->_handleResponse(
+                [
+                    'status' => 0,
+                    'message' => $cognitoResponse['message'],
+                    'parameters' => $cognitoResponse['parameters'],
+                    'session' => $cognitoResponse['session'],
+                ],
+                200,
+                false
+            );
+        }
+        return $this->asJson($cognitoResponse);
+    }
+
+    public function actionSetMfaPreferences()
+    {
+        /** @var Request */
+        $request = Craft::$app->getRequest();
+
+        $email = $request->getRequiredBodyParam('email');
+        $session = $request->getRequiredBodyParam('session');
+
+        $cognitoResponse = CraftJwtAuth::getInstance()
+            ->cognito
+            ->setMfaPreferences($email, $session);
+        if (key_exists('MfaSetupFlag', $cognitoResponse)) {
+            return $this->_handleResponse(
+                [
+                    'status' => 0,
+                    'message' => $cognitoResponse['message'],
+                    'parameters' => $cognitoResponse['parameters'],
+                    'session' => $cognitoResponse['session'],
+                ],
+                200,
+                false
+            );
+        }
+        return $this->asJson($cognitoResponse);
+    }
+
+    public function actionForgotPasswordRequest()
     {
         /** @var Request */
         $request = Craft::$app->getRequest();
 
         $email = $request->getRequiredBodyParam('email');
 
-        $cognitoError = CraftJwtAuth::getInstance()->cognito->sendPasswordResetMail($email);
+        $cognitoError = CraftJwtAuth::getInstance()
+            ->cognito
+            ->sendPasswordResetMail($email);
         if (strlen($cognitoError) == 0) {
             return $this->_handleResponse(null, 200);
         } else {
@@ -210,7 +274,7 @@ class AuthController extends Controller
         }
     }
 
-    public function actionForgotpassword()
+    public function actionForgotPassword()
     {
         /** @var Request */
         $request = Craft::$app->getRequest();
@@ -219,7 +283,9 @@ class AuthController extends Controller
         $password = $request->getRequiredBodyParam('password');
         $code = $request->getRequiredBodyParam('code');
 
-        $cognitoError = CraftJwtAuth::getInstance()->cognito->resetPassword($code, $password, $email);
+        $cognitoError = CraftJwtAuth::getInstance()
+            ->cognito
+            ->resetPassword($code, $password, $email);
         if (strlen($cognitoError) == 0) {
             return $this->_handleResponse(null, 200);
         } else {
