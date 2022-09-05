@@ -1,11 +1,11 @@
 <?php
 
-namespace levinriegner\craftcognitoauth\services;
+namespace unionco\craftcognitoauth\services;
 
 use Craft;
 use craft\base\Component;
-use levinriegner\craftcognitoauth\CraftJwtAuth;
-use levinriegner\craftcognitoauth\events\UserCreateEvent;
+use unionco\craftcognitoauth\CraftJwtAuth;
+use unionco\craftcognitoauth\events\UserCreateEvent;
 
 abstract class AbstractValidator extends Component{
     

@@ -9,7 +9,7 @@
  * @copyright Copyright (c) 2019 Mike Pierce
  */
 
-namespace levinriegner\craftcognitoauth\models;
+namespace unionco\craftcognitoauth\models;
 
 use Craft;
 use craft\base\Model;

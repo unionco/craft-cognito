@@ -1,8 +1,8 @@
 {
-  "name": "levinriegner/craft-cognito-auth",
+  "name": "unionco/craft-cognito-auth",
   "description": "Enable authentication to Craft using AWS Cognito",
   "type": "craft-plugin",
-  "version": "0.7.2",
+  "version": "1.0.0",
   "keywords": [
     "craft",
     "cms",
@@ -11,8 +11,8 @@
     "cognito"
   ],
   "support": {
-    "docs": "https://github.com/levin-riegner/craft-cognito",
-    "issues": "https://github.com/levin-riegner/craft-cognito/issues"
+    "docs": "https://github.com/unionco/craft-cognito",
+    "issues": "https://github.com/unionco/craft-cognito/issues"
   },
   "license": "MIT",
   "authors": [
@@ -23,19 +23,23 @@
     {
       "name": "Ohmycode",
       "homepage": "https://www.ohmycode.cat"
+    },
+    {
+      "name": "Abry Rath",
+      "homepage": "https://union.co"
     }
   ],
   "require": {
-    "craftcms/cms": "^3.7.33",
-    "lcobucci/jwt": "3.3.3",
+    "craftcms/cms": "^4.0.0",
+    "lcobucci/jwt": "^4.2.1",
     "aws/aws-sdk-php": "^3.112",
     "codercat/jwk-to-pem": "^0.0.3",
     "simplesamlphp/saml2": "^4.0",
-    "lightsaml/lightsaml": "^2.0"
+    "litesaml/lightsaml": "^2.0"
   },
   "autoload": {
     "psr-4": {
-      "levinriegner\\craftcognitoauth\\": "src/"
+      "unionco\\craftcognitoauth\\": "src/"
     }
   },
   "extra": {
@@ -48,9 +52,15 @@
     "hasCpSection": false,
     "changelogUrl": "https://raw.githubusercontent.com/levin-riegner/craft-cognito/master/CHANGELOG.md",
     "components": {
-      "cognito": "levinriegner\\craftcognitoauth\\services\\AWSCognitoService",
-      "settingsService": "levinriegner\\craftcognitoauth\\services\\SettingsService"
+      "cognito": "unionco\\craftcognitoauth\\services\\AWSCognitoService",
+      "settingsService": "unionco\\craftcognitoauth\\services\\SettingsService"
     },
-    "class": "levinriegner\\craftcognitoauth\\CraftJwtAuth"
+    "class": "unionco\\craftcognitoauth\\CraftJwtAuth"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
   }
 }

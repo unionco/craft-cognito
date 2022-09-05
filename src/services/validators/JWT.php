@@ -9,20 +9,20 @@
  * @copyright Copyright (c) 2019 Mike Pierce
  */
 
-namespace levinriegner\craftcognitoauth\services\validators;
+namespace unionco\craftcognitoauth\services\validators;
 
 use Craft;
 use craft\base\Component;
 use craft\elements\User;
 use craft\helpers\StringHelper;
 use craft\helpers\ArrayHelper;
-use levinriegner\craftcognitoauth\CraftJwtAuth;
+use unionco\craftcognitoauth\CraftJwtAuth;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
 
 use CoderCat\JWKToPEM\JWKConverter;
-use levinriegner\craftcognitoauth\services\AbstractValidator;
+use unionco\craftcognitoauth\services\AbstractValidator;
 
 /**
  * @author    Mike Pierce

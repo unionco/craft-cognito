@@ -9,19 +9,19 @@
  * @copyright Copyright (c) 2019 Mike Pierce
  */
 
-namespace levinriegner\craftcognitoauth;
+namespace unionco\craftcognitoauth;
 
-use levinriegner\craftcognitoauth\models\Settings;
-use levinriegner\craftcognitoauth\services\AWSCognitoService;
-use levinriegner\craftcognitoauth\services\SettingsService;
+use unionco\craftcognitoauth\models\Settings;
+use unionco\craftcognitoauth\services\AWSCognitoService;
+use unionco\craftcognitoauth\services\SettingsService;
 
 use Craft;
 use craft\base\Plugin;
 use craft\events\RegisterUrlRulesEvent;
 use craft\web\Application;
 use craft\web\UrlManager;
-use levinriegner\craftcognitoauth\helpers\ValidatorsHelper;
-use levinriegner\craftcognitoauth\services\AbstractValidator;
+use unionco\craftcognitoauth\helpers\ValidatorsHelper;
+use unionco\craftcognitoauth\services\AbstractValidator;
 use yii\base\Event;
 
 /**
@@ -52,7 +52,7 @@ class CraftJwtAuth extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '0.1.0';
+    public string $schemaVersion = '0.1.0';
 
     // Public Methods
     // =========================================================================
@@ -112,7 +112,7 @@ class CraftJwtAuth extends Plugin
     /**
      * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?\craft\base\Model
     {
         return new Settings();
     }
@@ -120,7 +120,7 @@ class CraftJwtAuth extends Plugin
     /**
      * @inheritdoc
      */
-    protected function settingsHtml(): string
+    protected function settingsHtml(): ?string
     {
         return Craft::$app->view->renderTemplate(
             'craft-cognito-auth/settings',

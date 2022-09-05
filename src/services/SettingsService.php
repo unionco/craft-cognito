@@ -1,12 +1,12 @@
 <?php
 
-namespace levinriegner\craftcognitoauth\services;
+namespace unionco\craftcognitoauth\services;
 
 use Craft;
 use craft\base\Component;
-use levinriegner\craftcognitoauth\CraftJwtAuth;
-use levinriegner\craftcognitoauth\models\ExtraSettings;
-use levinriegner\craftcognitoauth\models\PluginSettings;
+use unionco\craftcognitoauth\CraftJwtAuth;
+use unionco\craftcognitoauth\models\ExtraSettings;
+use unionco\craftcognitoauth\models\PluginSettings;
 
 class SettingsService extends Component
 {

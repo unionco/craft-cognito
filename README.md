@@ -27,7 +27,7 @@ This plugin requires Craft CMS 3.7 or later.
 
 2. Load the plugin with Composer:
 
-    `nitro composer require levinriegner/craft-cognito-auth`
+    `nitro composer require unionco/craft-cognito-auth`
 
 3. On your browser, open your local Craft Control Panel, navigate to Settings → Plugins, and click the "Install" button for Craft Cognito Auth.
 

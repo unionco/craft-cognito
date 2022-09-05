@@ -1,10 +1,10 @@
 <?php
 
-namespace levinriegner\craftcognitoauth\helpers;
+namespace unionco\craftcognitoauth\helpers;
 
-use levinriegner\craftcognitoauth\services\AbstractValidator;
-use levinriegner\craftcognitoauth\services\validators\JWT;
-use levinriegner\craftcognitoauth\services\validators\SAML;
+use unionco\craftcognitoauth\services\AbstractValidator;
+use unionco\craftcognitoauth\services\validators\JWT;
+use unionco\craftcognitoauth\services\validators\SAML;
 
 class ValidatorsHelper {
 

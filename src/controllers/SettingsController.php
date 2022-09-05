@@ -3,12 +3,12 @@
  * @copyright Copyright (c) PutYourLightsOn
  */
 
-namespace levinriegner\craftcognitoauth\controllers;
+namespace unionco\craftcognitoauth\controllers;
 
 use Craft;
 use craft\errors\MissingComponentException;
 use craft\web\Controller;
-use levinriegner\craftcognitoauth\CraftJwtAuth;
+use unionco\craftcognitoauth\CraftJwtAuth;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
 

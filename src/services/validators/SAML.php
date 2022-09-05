@@ -1,12 +1,12 @@
 <?php
 
-namespace levinriegner\craftcognitoauth\services\validators;
+namespace unionco\craftcognitoauth\services\validators;
 
 use Craft;
 use craft\elements\User;
 use craft\helpers\StringHelper;
-use levinriegner\craftcognitoauth\CraftJwtAuth;
-use levinriegner\craftcognitoauth\services\AbstractValidator;
+use unionco\craftcognitoauth\CraftJwtAuth;
+use unionco\craftcognitoauth\services\AbstractValidator;
 use LightSaml\Credential\X509Certificate;
 use LightSaml\Model\Assertion\Assertion;
 use LightSaml\Model\Context\DeserializationContext;

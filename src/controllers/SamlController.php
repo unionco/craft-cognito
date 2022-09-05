@@ -9,11 +9,11 @@
  * @copyright Copyright (c) 2019 Mike Pierce
  */
 
-namespace levinriegner\craftcognitoauth\controllers;
+namespace unionco\craftcognitoauth\controllers;
 
 use Craft;
 use craft\web\Controller;
-use levinriegner\craftcognitoauth\CraftJwtAuth;
+use unionco\craftcognitoauth\CraftJwtAuth;
 
 /**
  * @author    Mike Pierce
@@ -31,9 +31,9 @@ class SamlController extends Controller
      *         The actions must be in 'kebab-case'
      * @access protected
      */
-    protected $allowAnonymous = ['auth', 'login'];
+    protected array|int|bool $allowAnonymous = ['auth', 'login'];
 
-    public function beforeAction($action)
+    public function beforeAction($action): bool
 	{
 
         $this->enableCsrfValidation = false;

@@ -9,7 +9,7 @@
  * @copyright Copyright (c) 2019 Mike Pierce
  */
 
-namespace levinriegner\craftcognitoauth\models;
+namespace unionco\craftcognitoauth\models;
 
 use Craft;
 use craft\base\Model;
@@ -45,7 +45,7 @@ class Settings extends Model
 
     // Public Methods
     // =========================================================================
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'parser' => [
@@ -62,7 +62,7 @@ class Settings extends Model
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             ['jwtEnabled', 'boolean'],

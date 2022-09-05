@@ -1,13 +1,13 @@
 <?php
 
-namespace levinriegner\craftcognitoauth\services;
+namespace unionco\craftcognitoauth\services;
 
 use Craft;
 use craft\base\Component;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
 use Lcobucci\JWT\Token;
-use levinriegner\craftcognitoauth\CraftJwtAuth;
+use unionco\craftcognitoauth\CraftJwtAuth;
 
 class AWSCognitoService extends Component
 {

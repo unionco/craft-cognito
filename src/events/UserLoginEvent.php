@@ -5,14 +5,14 @@
  * @license MIT
  */
 
-namespace levinriegner\craftcognitoauth\events;
+namespace unionco\craftcognitoauth\events;
 
 use yii\base\Event;
 
 /**
  * Class UserLoginEvent
  *
- * @author    Levinriegner
+ * @author    unionco
  * @since     1.0
  */
 class UserLoginEvent extends Event

@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-namespace levinriegner\craftcognitoauth\events;
+namespace unionco\craftcognitoauth\events;
 
 use craft\elements\User;
 use yii\base\Event;
@@ -13,7 +13,7 @@ use yii\base\Event;
 /**
  * Class UserCreateEvent
  *
- * @author    Levinriegner
+ * @author    unionco
  * @since     0.5
  */
 class UserCreateEvent extends Event
