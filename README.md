@@ -19,7 +19,7 @@ This plugin enables requests to Craft to be securely authenticated in the presen
 
 ## Requirements
 
-This plugin requires Craft CMS 3.7 or later.
+This plugin requires Craft CMS 4.0 or later.
 
 ## Installation
 
@@ -43,6 +43,7 @@ Navigate to the settings page of the plugin and enter required settings to activ
 | `Enable JWT token handling`| Optional. Enable to automatically parse incoming JWT tokens and try to login the user
 | `AWS Cognito region`       | Mandatory. AWS cognito region.                                                              |
 | `AWS Cognito app client id`| Mandatory. AWS Cognito app client id (under App integration -> app client settings).        |
+| `AWS Cognito app client secret` | Added by Union 9/5/22. Configured client secret for backend requests. |
 | `AWS Cognito user pool id` | Mandatory. AWS Cognito user pool id (under General settings).                               |
 | `JSON Web Key Set URL`     | Mandatory. JSON Web Key Set URL (JWKS), used for verifying incoming Cognito JWTs.           |
 | **SAML configuration**     |                                                                                             |
@@ -91,3 +92,8 @@ A big thank you to:
 ## License
 
 This repo is covered under the [MIT License](LICENSE).
+
+## Union Resources
+Adding client secret setting:
+https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminInitiateAuth.html#API_AdminInitiateAuth_RequestParameters
+Also not previously documented - in order to authenticate against any AWS service, you must configure the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` with an appropriate programmatic-access IAM user (in this case, the user must have Cognito access).
