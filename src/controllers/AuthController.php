@@ -149,7 +149,9 @@ class AuthController extends Controller
             $this->trigger(self::EVENT_BEFORE_LOGIN_COGNITO, $event);
         }
 
-        $cognitoResponse = CraftJwtAuth::getInstance()->cognito->authenticate($email, $password);
+        $cognitoResponse = CraftJwtAuth::getInstance()
+            ->cognito
+            ->authenticate($email, $password);
         if (array_key_exists('token', $cognitoResponse)) {
             if ($this->hasEventHandlers(self::EVENT_AFTER_LOGIN_COGNITO)) {
                 $this->trigger(self::EVENT_AFTER_LOGIN_COGNITO, $event);

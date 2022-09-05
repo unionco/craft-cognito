@@ -44,7 +44,8 @@ class AWSCognitoService extends Component
                 'AuthFlow' => 'REFRESH_TOKEN_AUTH',
                 'AuthParameters' => [
                     'USERNAME' => $username,
-                    'REFRESH_TOKEN' => $refreshToken
+                    'REFRESH_TOKEN' => $refreshToken,
+                    'SECRET_HASH' => $this->client_secret,
                 ],
                 'ClientId' => $this->client_id,
                 'UserPoolId' => $this->userpool_id,
@@ -63,6 +64,7 @@ class AWSCognitoService extends Component
     public function authenticate(string $username, string $password): array
     {
         try {
+            $secretHash = $this->cognitoSecretHash($username);
             $result = $this->client->adminInitiateAuth([
                 'AuthFlow' => 'ADMIN_NO_SRP_AUTH',
                 'ClientId' => $this->client_id,
@@ -70,7 +72,7 @@ class AWSCognitoService extends Component
                 'AuthParameters' => [
                     'USERNAME' => $username,
                     'PASSWORD' => $password,
-                    'SECRET_HASH' => $this->client_secret, // added by Union 9/5/22
+                    'SECRET_HASH' => $secretHash, // added by Union 9/5/22
                 ],
             ]);
         } catch (\Exception $e) {
@@ -182,11 +184,13 @@ class AWSCognitoService extends Component
 
             $userSub = $result->get('User')['Username'];
 
+            $secretHash = $this->cognitoSecretHash($email);
             $result = $this->client->adminInitiateAuth([
                 'AuthFlow' => 'ADMIN_NO_SRP_AUTH',
                 'AuthParameters' => [
                     "USERNAME" => $email,
-                    "PASSWORD" => $password
+                    "PASSWORD" => $password,
+                    'SECRET_HASH' => $secretHash, // Added by Union 9/5/22
                 ],
                 'ClientId' => $this->client_id,
                 'UserPoolId' => $this->userpool_id
@@ -338,7 +342,7 @@ class AWSCognitoService extends Component
         return '';
     }
 
-    public function getEmail(?Token $token)
+    public function getEmail(?Token $token): string
     {
         if (!$token) {
             return '';
@@ -347,7 +351,7 @@ class AWSCognitoService extends Component
         return $token->getClaim('email', '');
     }
 
-    public function isAdmin(?Token $token)
+    public function isAdmin(?Token $token): bool
     {
         if (!$token) {
             return false;
@@ -359,5 +363,15 @@ class AWSCognitoService extends Component
         }
 
         return false;
+    }
+
+    /**
+     * Added by Union 9/5/22 to support client secret
+     * 'SECRET_HASH' must be sent hashed with the user's username (in our case, this is the email)
+     */
+    private function cognitoSecretHash(string $username): string
+    {
+        $hash = hash_hmac('sha256', $username . $this->client_id, $this->client_secret, true);
+        return base64_encode($hash);
     }
 }
