@@ -43,6 +43,15 @@
 }}
 
 {{ forms.autosuggestField({
+    label: 'AWS Cognito app client secret',
+    instructions: 'Enter your AWS Cognito app client secret',
+    suggestEnvVars: true,
+    id: 'clientSecret',
+    name: 'clientSecret',
+    value: settings['clientSecret'] is defined? settings['clientSecret'] : ''})
+}}
+
+{{ forms.autosuggestField({
     label: 'AWS Cognito user pool id',
     instructions: 'Enter your AWS Cognito user pool id (under General settings)',
     suggestEnvVars: true,

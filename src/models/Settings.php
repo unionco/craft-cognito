@@ -28,12 +28,13 @@ class Settings extends Model
     /**
      * @var string
      */
-    public $autoCreateUser = false;
-    public $region = '';
-    public $clientId = '';
-    public $userpoolId = '';
-    public $jwks = '';
-    public $jwtEnabled = true;
+    public bool $autoCreateUser = false;
+    public string $region = '';
+    public string $clientId = '';
+    public string $clientSecret = '';
+    public string $userpoolId = '';
+    public string $jwks = '';
+    public bool $jwtEnabled = true;
     
     //Saml cert path to validate SAML tokens
     public $samlCert = '';
@@ -69,6 +70,7 @@ class Settings extends Model
             ['autoCreateUser', 'boolean'],
             ['region', 'string'],
             ['clientId', 'string'],
+            ['clientSecret', 'string'],
             ['userpoolId', 'string'],
             ['jwks', 'string'],
             ['samlEnabled', 'boolean'],
@@ -90,6 +92,11 @@ class Settings extends Model
     public function getClientId(): string
     {
         return Craft::parseEnv($this->clientId);
+    }
+    
+    public function getClientSecret(): string
+    {
+        return Craft::parseEnv($this->clientSecret);
     }
 
     public function getUserPoolId(): string

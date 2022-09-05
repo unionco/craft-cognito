@@ -11,28 +11,30 @@ use unionco\craftcognitoauth\CraftJwtAuth;
 
 class AWSCognitoService extends Component
 {
-    private $region;
-    private $client_id;
-    private $userpool_id;
+    private string $region;
+    private string $client_id;
+    private string $userpool_id;
+    private string $client_secret;
 
     private $client = null;
 
     public function __construct()
     {
-        $this->region = CraftJwtAuth::getInstance()->getSettings()->getRegion();
-        $this->client_id = CraftJwtAuth::getInstance()->getSettings()->getClientId();
-        $this->userpool_id = CraftJwtAuth::getInstance()->getSettings()->getUserPoolId();
+        $settings = CraftJwtAuth::getInstance()->getSettings();
+        $this->region = $settings->getRegion();
+        $this->client_id = $settings->getClientId();
+        $this->userpool_id = $settings->getUserPoolId();
+        $this->client_secret = $settings->getClientSecret();
 
         $this->initialize();
     }
 
-    public function initialize() : void
+    public function initialize(): void
     {
         $this->client = new CognitoIdentityProviderClient([
-          'version' => '2016-04-18',
-          'region' => $this->region
+            'version' => '2016-04-18',
+            'region' => $this->region
         ]);
-        
     }
 
     public function refreshAuthentication($username, $refreshToken)
@@ -58,7 +60,7 @@ class AWSCognitoService extends Component
         }
     }
 
-    public function authenticate(string $username, string $password) : array
+    public function authenticate(string $username, string $password): array
     {
         try {
             $result = $this->client->adminInitiateAuth([
@@ -68,6 +70,7 @@ class AWSCognitoService extends Component
                 'AuthParameters' => [
                     'USERNAME' => $username,
                     'PASSWORD' => $password,
+                    'SECRET_HASH' => $this->client_secret, // added by Union 9/5/22
                 ],
             ]);
         } catch (\Exception $e) {
@@ -82,8 +85,14 @@ class AWSCognitoService extends Component
         ];
     }
 
-    public function signup(string $email, string $password, string $firstname = null, string $lastname = null, string $phone = null, string $username = null) : array
-    {
+    public function signup(
+        string $email,
+        string $password,
+        string $firstname = null,
+        string $lastname = null,
+        string $phone = null,
+        string $username = null
+    ): array {
         $userAttributes = [
             [
                 'Name' => 'email',
@@ -91,24 +100,24 @@ class AWSCognitoService extends Component
             ]
         ];
 
-        if($firstname)
+        if ($firstname) {
             $userAttributes[] = [
                 'Name' => 'given_name',
                 'Value' => $firstname
             ];
-
-        if($lastname)
+        }
+        if ($lastname) {
             $userAttributes[] = [
                 'Name' => 'family_name',
                 'Value' => $lastname
             ];
-            
-        if($phone)
+        }
+        if ($phone) {
             $userAttributes[] = [
                 'Name' => 'phone_number',
                 'Value' => $phone
             ];
-
+        }
         try {
             $result = $this->client->signUp([
                 'ClientId' => $this->client_id,
@@ -118,14 +127,19 @@ class AWSCognitoService extends Component
             ]);
 
             return ["UserSub" => $result->get('UserSub')];
-            
         } catch (\Exception $e) {
             return ["error" => $e->getMessage()];
         }
     }
 
-    public function adminCreateUser(string $email, string $password, string $firstname, string $lastname, string $phone = null, $username = null) : array
-    {
+    public function adminCreateUser(
+        string $email,
+        string $password,
+        string $firstname,
+        string $lastname,
+        string $phone = null,
+        $username = null
+    ): array {
         $userAttributes = [
             [
                 'Name' => 'given_name',
@@ -145,7 +159,7 @@ class AWSCognitoService extends Component
             ]
         ];
 
-        if($phone){
+        if ($phone) {
             $userAttributes[] = [
                 'Name' => 'phone_number',
                 'Value' => $phone
@@ -176,15 +190,15 @@ class AWSCognitoService extends Component
                 ],
                 'ClientId' => $this->client_id,
                 'UserPoolId' => $this->userpool_id
-            ]);            
+            ]);
 
             $session = $result->get("Session");
 
             $result = $this->client->adminRespondToAuthChallenge([
                 'ChallengeName' => 'NEW_PASSWORD_REQUIRED',
-                'ChallengeResponses'=> [
-                    "USERNAME"=>$email,
-                    "NEW_PASSWORD"=>$password
+                'ChallengeResponses' => [
+                    "USERNAME" => $email,
+                    "NEW_PASSWORD" => $password
                 ],
                 'ClientId' => $this->client_id,
                 'Session' => $session,
@@ -192,7 +206,6 @@ class AWSCognitoService extends Component
             ]);
 
             return ["UserSub" => $userSub];
-            
         } catch (\Exception $e) {
             return ["error" => $e->getMessage()];
         }
@@ -212,7 +225,7 @@ class AWSCognitoService extends Component
         return '';
     }
 
-    public function confirmSignup(string $email, string $code) : string
+    public function confirmSignup(string $email, string $code): string
     {
         try {
             $result = $this->client->confirmSignUp([
@@ -227,33 +240,34 @@ class AWSCognitoService extends Component
         return '';
     }
 
-    public function updateUserAttributes($username, $firstname, $lastname, $phone = null, $email = null) : string
+    public function updateUserAttributes($username, $firstname, $lastname, $phone = null, $email = null): string
     {
         try {
             $userAttributes = [];
-            if($firstname !=null)
+            if ($firstname != null) {
                 $userAttributes[] = [
                     'Name' => 'given_name',
                     'Value' => $firstname,
                 ];
-
-            if($lastname !=null)
+            }
+            if ($lastname != null) {
                 $userAttributes[] = [
                     'Name' => 'family_name',
                     'Value' => $lastname,
                 ];
-
-            if($phone !=null)
+            }
+            if ($phone != null) {
                 $userAttributes[] = [
                     'Name' => 'phone_number',
                     'Value' => $phone,
                 ];
-
-            if($email !=null)
+            }
+            if ($email != null) {
                 $userAttributes[] = [
                     'Name' => 'email',
                     'Value' => $email,
                 ];
+            }
             $this->client->adminUpdateUserAttributes([
                 'Username' => $username,
                 'UserPoolId' => $this->userpool_id,
@@ -280,7 +294,7 @@ class AWSCognitoService extends Component
         return '';
     }
 
-    public function disableUser($username) : string
+    public function disableUser($username): string
     {
         try {
             $this->client->adminDisableUser([
@@ -294,7 +308,7 @@ class AWSCognitoService extends Component
         return '';
     }
 
-    public function sendPasswordResetMail(string $email) : string
+    public function sendPasswordResetMail(string $email): string
     {
         try {
             $this->client->forgotPassword([
@@ -308,7 +322,7 @@ class AWSCognitoService extends Component
         return '';
     }
 
-    public function resetPassword(string $code, string $password, string $email) : string
+    public function resetPassword(string $code, string $password, string $email): string
     {
         try {
             $this->client->confirmForgotPassword([
@@ -324,17 +338,23 @@ class AWSCognitoService extends Component
         return '';
     }
 
-    public function getEmail(?Token $token){
-        if(!$token) return '';
-        
-        return $token->getClaim('email','');
+    public function getEmail(?Token $token)
+    {
+        if (!$token) {
+            return '';
+        }
+
+        return $token->getClaim('email', '');
     }
 
-    public function isAdmin(?Token $token){
-        if(!$token) return false;
+    public function isAdmin(?Token $token)
+    {
+        if (!$token) {
+            return false;
+        }
 
-        $groups = $token->getClaim('cognito:groups',[]);
-        if($groups && in_array('admin', $groups)){
+        $groups = $token->getClaim('cognito:groups', []);
+        if ($groups && in_array('admin', $groups)) {
             return true;
         }
 
